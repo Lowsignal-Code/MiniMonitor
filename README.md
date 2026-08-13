@@ -1,334 +1,172 @@
-01 // OVERVIEW
+# System Monitor
 
-MiniMonitor is a lightweight terminal-based system monitoring tool written in Python.
+A lightweight, terminal-based system monitoring tool written in Python. It displays real-time CPU, RAM, disk, and network usage, along with the top processes consuming CPU resources, all in a continuously refreshing dashboard directly in your terminal.
 
-The project uses psutil to collect real-time information about the local system and display it through a simple command-line interface.
+The tool is built entirely on top of [psutil](https://pypi.org/project/psutil/) and the standard library, with no external UI framework required, making it easy to read, modify, and extend.
 
-The goal is to create a small, practical, and readable monitoring tool while exploring how Python can interact with operating-system resources.
+## Table of Contents
 
-02 // FEATURES
+- [Features](#features)
+- [Preview](#preview)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Project Structure](#project-structure)
+- [How It Works](#how-it-works)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Contributing](#contributing)
 
-MiniMonitor provides real-time information about:
+## Features
 
-CPU usage
-RAM usage
-Total and used RAM
-Disk usage
-Total and used disk space
-Network upload speed
-Network download speed
-Top processes by CPU usage
-Process ID (PID)
-Process memory usage
-Automatic terminal refresh
-Cross-platform terminal clearing
-Graceful shutdown with Ctrl+C
-03 // PREVIEW
+- Real-time CPU usage percentage
+- RAM usage percentage and used/total memory
+- Disk usage percentage and used/total space
+- Live upload and download network speed
+- Top 5 processes sorted by CPU usage (PID, name, CPU%, RAM%)
+- Auto-refreshing display with configurable refresh rate
+- Human-readable byte formatting (B, KB, MB, GB, TB, PB)
+- Cross-platform screen clearing (Windows and Unix-based systems)
+
+## Preview
+
+```
 ============================================================
                   SYSTEM MONITOR
 ============================================================
-CPU Usage      :   17.4%
-RAM Usage      :   52.3%
-RAM Used       :   8.41 GB / 16.00 GB
-Disk Usage     :   61.7%
-Disk Used      :   489.32 GB / 793.45 GB
+CPU Usage      :   12.4%
+RAM Usage      :   58.7%
+RAM Used       : 9.15 GB / 15.60 GB
+Disk Usage     :   71.2%
+Disk Used      : 214.30 GB / 300.00 GB
 ------------------------------------------------------------
 NETWORK
-Upload Speed   : 125.32 KB/s
-Download Speed : 2.41 MB/s
+Upload Speed   : 12.45 KB/s
+Download Speed : 340.10 KB/s
 ------------------------------------------------------------
 TOP PROCESSES BY CPU
 PID     PROCESS                  CPU       RAM
 ------------------------------------------------------------
-4128    chrome.exe               8.2       4.3%
-9216    python.exe               4.7       1.2%
-3044    code.exe                 3.1       6.7%
+1234    chrome                   18.2      6.3%
+5678    python                   9.5       1.1%
+9012    explorer                 3.0       0.8%
+3456    code                     2.7       2.4%
+7890    system                   1.1       0.2%
 ============================================================
 Press Ctrl+C to exit
+```
 
-The values shown above are examples. Actual values depend on the system running the application.
+The exact numbers will vary depending on your system's current load.
 
-04 // HOW IT WORKS
+## Requirements
 
-MiniMonitor continuously collects system information using psutil.
+- Python 3.7 or newer
+- [psutil](https://pypi.org/project/psutil/), a cross-platform library for retrieving process and system utilization information
+- A terminal or command-line environment (Windows Command Prompt/PowerShell, macOS Terminal, or a Linux shell)
 
-Start
-  │
-  ▼
-Collect system information
-  │
-  ├── CPU
-  ├── RAM
-  ├── Disk
-  ├── Network
-  └── Processes
-  │
-  ▼
-Process & format data
-  │
-  ▼
-Display information
-  │
-  ▼
-Wait
-  │
-  ▼
-Refresh
-  │
-  └───────────────► Repeat
-
-The monitor continues running until the user stops it with:
-
-Ctrl + C
-05 // PROJECT STRUCTURE
-MiniMonitor/
-│
-├── system_monitor.py
-├── requirements.txt
-└── README.md
-system_monitor.py
-
-The main application containing the system monitoring logic and terminal interface.
-
-requirements.txt
-
-Contains the Python dependencies required by the project.
-
-README.md
-
-Project documentation.
-
-06 // REQUIREMENTS
-Python 3.x
-psutil
-
-No additional monitoring software is required.
-
-07 // INSTALLATION
+## Installation
 
 Clone the repository:
 
-git clone https://github.com/Lowsignal-Code/MiniMonitor.git
+```bash
+git clone https://github.com/<your-username>/<repository-name>.git
+cd <repository-name>
+```
 
-Enter the project directory:
+It is recommended to use a virtual environment to keep dependencies isolated:
 
-cd MiniMonitor
-
-Create a virtual environment.
-
-Windows
-python -m venv .venv
-
-Activate it:
-
-.venv\Scripts\activate
-Linux / macOS
-python3 -m venv .venv
-
-Activate it:
-
-source .venv/bin/activate
+```bash
+python -m venv venv
+source venv/bin/activate   # On Windows use: venv\Scripts\activate
+```
 
 Install the required dependency:
 
+```bash
+pip install psutil
+```
+
+Alternatively, if a `requirements.txt` file is included in the repository:
+
+```bash
 pip install -r requirements.txt
-08 // RUN
+```
 
-Start the monitor:
+## Usage
 
+Run the script from the terminal:
+
+```bash
 python system_monitor.py
+```
 
-The application will continuously refresh the displayed information.
+On startup, the script takes an initial network snapshot, then enters a loop that:
 
-To stop the monitor:
+1. Waits for the configured refresh interval.
+2. Recalculates CPU, RAM, disk, and network statistics.
+3. Clears the terminal screen.
+4. Redraws the dashboard with the updated values.
 
-Ctrl + C
-09 // TECHNOLOGY
-Language
-└── Python
+The monitor will keep refreshing automatically until interrupted. Press `Ctrl+C` at any time to stop it gracefully; the script catches the interrupt, clears the screen, and prints a shutdown message instead of raising a traceback.
 
-Library
-└── psutil
+**Note:** On some operating systems, retrieving accurate per-process CPU percentages may require running the script with administrator/root privileges, since `psutil` may not be able to access information for processes owned by other users otherwise.
 
-Interface
-└── Terminal / CLI
+## Configuration
 
-Development
-├── Git
-└── GitHub
-10 // SYSTEM MONITORING
+The refresh interval can be adjusted by changing the `REFRESH_RATE` constant (in seconds) near the top of the script:
 
-MiniMonitor collects information from several areas of the operating system.
+```python
+REFRESH_RATE = 1
+```
 
-CPU
+Increasing this value reduces CPU overhead from the monitor itself and produces smoother average network speed readings, at the cost of a less "live" feel. Decreasing it makes the dashboard update more frequently but increases the script's own resource usage.
 
-Displays the current overall CPU utilization.
+Other aspects of the script that can be easily customized include:
 
-RAM
+- The number of top processes displayed, by changing the slice `processes[:5]` in `get_top_processes()`.
+- The sorting criterion for the process list, by changing the `key` used in the `sort()` call (for example, sorting by memory usage instead of CPU usage).
+- The width and formatting of the printed tables, by adjusting the `f-string` field widths in `display_system_info()`.
 
-Displays:
+## Project Structure
 
-Current memory usage percentage
-Used memory
-Total available memory
-Disk
+```
+.
+├── system_monitor.py   # Main application script
+└── README.md
+```
 
-Displays:
+## How It Works
 
-Disk utilization percentage
-Used disk space
-Total disk space
-Network
+- **CPU, RAM, and disk statistics** are gathered using `psutil.cpu_percent()`, `psutil.virtual_memory()`, and `psutil.disk_usage()`, respectively. Disk usage is measured for the system's root path, resolved with `os.path.abspath(os.sep)` so the script works correctly on both Windows and Unix-based systems.
+- **Network speed** is not read directly from `psutil`, since it only exposes cumulative byte counters. Instead, the script takes two snapshots of `psutil.net_io_counters()` a fixed interval apart, computes the difference in bytes sent and received, and divides by the elapsed time to derive an upload and download rate in bytes per second.
+- **Top processes** are collected with `psutil.process_iter()`, which iterates over all currently running processes. Each process's PID, name, CPU percentage, and memory percentage are extracted, and processes that raise `psutil.NoSuchProcess` or `psutil.AccessDenied` (for example, due to insufficient permissions or a process that exited mid-iteration) are silently skipped. The resulting list is sorted by CPU usage in descending order, and only the top five entries are kept.
+- **Byte formatting** is handled by `get_size()`, which converts a raw byte count into a human-readable string by repeatedly dividing by 1024 and stepping through the units B, KB, MB, GB, TB, and PB.
+- **The display loop** clears the terminal on every cycle using the platform-appropriate command (`cls` on Windows, `clear` on Unix-based systems) and reprints the full dashboard, which creates the effect of a continuously updating, in-place monitor.
 
-The application calculates approximate upload and download speeds by comparing network byte counters between consecutive measurements.
+## Limitations
 
-Current Bytes
-      -
-Previous Bytes
-      =
-Transferred Bytes
+- CPU usage percentages, particularly for individual processes, may be less accurate on the very first refresh cycle, since `psutil` needs a baseline measurement to compare against.
+- Network speed reflects total system-wide traffic across all interfaces, not per-application usage.
+- Disk usage is reported only for the root/system drive; additional mounted drives or partitions are not shown.
+- Accessing information for processes owned by other users may be restricted by the operating system unless the script is run with elevated privileges.
+- The dashboard is designed for standard terminal widths; extremely narrow terminal windows may cause the layout to wrap or misalign.
 
-The transferred amount is then divided by the refresh interval to estimate the current transfer rate.
+## Roadmap
 
-Processes
+Potential future improvements include:
 
-MiniMonitor retrieves running processes and collects information such as:
+- Support for monitoring multiple disks and network interfaces individually.
+- A configurable number of displayed processes, exposed as a command-line argument.
+- Logging of historical usage data to a file for later analysis.
+- An option to sort the process list by memory usage instead of CPU usage.
+- A curses-based or `rich`-based interface for smoother rendering without a full screen clear.
 
-PID
-Process name
-CPU usage
-Memory usage
+## License
 
-Processes are sorted by CPU usage and the top five are displayed.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-11 // CROSS-PLATFORM SUPPORT
+## Contributing
 
-MiniMonitor includes basic support for Windows, Linux, and macOS.
-
-The terminal clearing command is selected according to the operating system:
-
-os.system("cls" if os.name == "nt" else "clear")
-
-This allows the terminal interface to refresh correctly across different environments.
-
-12 // ERROR HANDLING
-
-Processes can disappear or become inaccessible while the monitor is running.
-
-For example, a process may terminate immediately after being detected.
-
-The application handles common psutil exceptions such as:
-
-NoSuchProcess
-AccessDenied
-
-This prevents an individual inaccessible process from terminating the entire application.
-
-13 // PROJECT GOAL
-
-MiniMonitor was created as a practical Python project focused on system interaction and monitoring.
-
-The project explores how Python can retrieve information from the operating system and present it in a useful terminal interface.
-
-It also provides practical experience with:
-
-Python
-│
-├── Functions
-├── Loops
-├── Modules
-├── Exceptions
-├── Lists
-├── Dictionaries
-├── Sorting
-├── Formatting
-└── External Libraries
-14 // FUTURE IMPROVEMENTS
-
-Possible future improvements include:
-
-[ ] CPU temperature monitoring
-[ ] Battery information
-[ ] Per-core CPU usage
-[ ] Network interface selection
-[ ] Process search
-[ ] Process filtering
-[ ] Configurable refresh rate
-[ ] Configurable process count
-[ ] Disk I/O monitoring
-[ ] Network interface statistics
-[ ] System uptime
-[ ] Terminal colors
-[ ] Interactive CLI
-[ ] Configuration file
-[ ] Logging
-
-The project is intentionally kept lightweight and focused on the command line.
-
-15 // DEVELOPMENT WORKFLOW
-Idea
-  ↓
-Implementation
-  ↓
-Testing
-  ↓
-Debugging
-  ↓
-Improvement
-  ↓
-Documentation
-  ↓
-Git
-  ↓
-GitHub
-
-The project is part of my ongoing journey of learning Python through practical projects.
-
-16 // STATUS
-Project      : MiniMonitor
-Version      : 1.0
-Language     : Python
-Interface    : CLI
-Status       : Active
-17 // PHILOSOPHY
-Observe.
-Understand.
-Build.
-Break.
-Debug.
-Improve.
-Repeat.
-
-The interesting part is usually hidden underneath.
-
-18 // DISCLAIMER
-
-MiniMonitor is an educational and lightweight system monitoring tool.
-
-It is not intended to replace professional system monitoring or infrastructure monitoring solutions.
-
-19 // AUTHOR
-
-Danial
-
-Computer Programming Student interested in:
-
-Python
-Linux
-Networking
-Cybersecurity
-Automation
-Systems
-$ ./minimonitor
-
-Monitoring system...
-
-Status: ONLINE
-> exit
-Connection closed.
-
-The system keeps running...
-
-⭐ If you find the project useful or interesting, feel free to star the repository.
-
-
+Contributions, issues, and feature requests are welcome. Feel free to open a pull request or submit an issue.
