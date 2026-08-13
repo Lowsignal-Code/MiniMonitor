@@ -71,8 +71,8 @@ The exact numbers will vary depending on your system's current load.
 Clone the repository:
 
 ```bash
-git clone https://github.com/<your-username>/<repository-name>.git
-cd <repository-name>
+git clone https://github.com/<Lowsignal-Code>/<MiniMonitor>.git
+cd <MiniMonitor>
 ```
 
 It is recommended to use a virtual environment to keep dependencies isolated:
