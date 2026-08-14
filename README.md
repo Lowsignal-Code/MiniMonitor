@@ -99,7 +99,7 @@ pip install -r requirements.txt
 Run the script from the terminal:
 
 ```bash
-python system_monitor.py
+python Main.py
 ```
 
 On startup, the script takes an initial network snapshot, then enters a loop that:
