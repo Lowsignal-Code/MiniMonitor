@@ -71,7 +71,7 @@ The exact numbers will vary depending on your system's current load.
 Clone the repository:
 
 ```bash
-git clone https://github.com/<HoneySpider>/<MiniMonitor>.git
+git clone https://github.com/<HoneySpider-Code>/<MiniMonitor>.git
 cd <MiniMonitor>
 ```
 
